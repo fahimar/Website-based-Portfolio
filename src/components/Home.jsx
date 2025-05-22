@@ -18,21 +18,20 @@ const Home = () => {
       <div className="max-w-screen-lg mx-auto flex flex-col items-center justify-center h-full px-4 md:flex-row">
         <div className="flex flex-col mx-auto justify-center h-full">
           <h2 className="text-4xl sm:text-6xl font-bold text-white">
-            I'm a Web Developer
+            I'm a Saas Builder [Full Stack Developer]
           </h2>
           <p className="text-gray-400 py-4 max-w-md">
-            I have completed my B.SC in CSE from Ahsanullah University of
-            Science and Technology with a CGPA of (3.005). My decision to pursue
-            a tech job stemmed from an intrinsic passion for the digital realm
-            and the transformative power of technology. Outside the confines of
-            my curriculum, I've immersed myself in real-world projects and
-            internships, giving me firsthand experience of the challenges and
-            rewards that come with tech roles. Collaborative endeavours like
-            hackathons and group coding challenges have not only refined my
-            technical prowess but also emphasised the value of teamwork in tech
-            solutions.Right now, I enjoy working on web-based applications that
-            make use of technologies like HTML, CSS, Javascript,Tailwind, Next
-            Js, and React,MongoDB.
+            I’m Fahim Al Rashid, a passionate Full Stack Developer with a B.Sc.
+            in Computer Science and Engineering from Ahsanullah University of
+            Science and Technology. Currently, I’m pursuing my M.Sc. in CSE
+            (Professional) at Jagannath University. I have hands-on experience
+            with technologies like React, Next.js, JavaScript, FastAPI, and
+            MongoDB. My interest in tech began early, and through internships,
+            hackathons, and real-world projects, I’ve developed strong
+            problem-solving and teamwork skills. I enjoy building impactful web
+            applications and continuously exploring fields like AI, cloud
+            computing, and blockchain to expand my capabilities and contribute
+            meaningfully to innovative tech-driven solutions.
           </p>
           <div>
             <Link
