@@ -2,20 +2,30 @@ import React from "react";
 import HeroImage from "../assets/heroImage.png";
 import { CgArrowRightR } from "react-icons/cg";
 import { Link } from "react-scroll";
+import { SparklesCore } from "./ui/sparkles";
 
 const Home = () => {
   return (
     <div
       name="home"
-      className="h-screen w-full bg-gradient-to-b from-black 
-     via-black to-gray-800"
+      className="h-screen w-full bg-gradient-to-b from-black
+     via-black to-gray-800 relative"
     >
-      {/* <img
-        className="rounded-full w-96 h-96"
-        src={HeroImage}
-        alt="image description"
-      /> */}
-      <div className="max-w-screen-lg mx-auto flex flex-col items-center justify-center h-full px-4 md:flex-row">
+      {/* Sparkles Background Animation */}
+      <div className="z-0 w-full absolute inset-0 h-screen">
+        <SparklesCore
+          id="tsparticleshome"
+          background="transparent"
+          minSize={0.6}
+          maxSize={1.4}
+          particleDensity={80}
+          className="w-full h-full"
+          particleColor="#FFFFFF"
+          speed={0.5}
+        />
+      </div>
+
+      <div className="max-w-screen-lg mx-auto flex flex-col items-center justify-center h-full px-4 md:flex-row relative z-10">
         <div className="flex flex-col mx-auto justify-center h-full">
           <h2 className="text-4xl sm:text-6xl font-bold text-white">
             I'm a Saas Builder [Full Stack Developer]
@@ -48,7 +58,7 @@ const Home = () => {
             </Link>
           </div>
         </div>
-        <div>
+        <div className="relative z-10">
           <img
             src={HeroImage}
             alt="my profile"

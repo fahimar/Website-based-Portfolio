@@ -6,6 +6,8 @@ import reactParallax from "../assets/portfolio/reactParallax.jpg";
 import reactSmooth from "../assets/portfolio/reactSmooth.jpg";
 import reactWeather from "../assets/portfolio/reactWeather.jpg";
 import todo_NextJs from "../assets/portfolio/todo_NextJs.png";
+import { SparklesCore } from "./ui/sparkles";
+
 const Portfolio = () => {
   const portfolio = [
     {
@@ -44,12 +46,25 @@ const Portfolio = () => {
   return (
     <div
       name="portfolio"
-      className="bg-gradient-to-b from-black to-gray-800
-    w-full text-white md:h-screen"
+      className="bg-gradient-to-b from-black via-black to-gray-800
+    w-full text-white md:h-screen relative"
     >
+      {/* Sparkles Background Animation */}
+      <div className="z-0 w-full absolute inset-0 h-screen">
+        <SparklesCore
+          id="tsparticlesportfolio"
+          background="transparent"
+          minSize={0.6}
+          maxSize={1.4}
+          particleDensity={80}
+          className="w-full h-full"
+          particleColor="#FFFFFF"
+          speed={0.5}
+        />
+      </div>
       <div
         className="max-w-screen-lg p-4 mx-auto flex flex-col
-      justify-center w-full h-full"
+      justify-center w-full h-full relative z-10"
       >
         <div className="pb-8">
           <p

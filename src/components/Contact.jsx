@@ -1,15 +1,29 @@
 import React from "react";
+import { SparklesCore } from "./ui/sparkles";
 
 const Contact = () => {
   return (
     <div
       name="contact"
       className="w-full h-screen bg-gradient-to-b from-black
-    to-gray-800 p-4 text-white"
+     via-black to-gray-800 p-4 text-white relative"
     >
+      {/* Sparkles Background Animation */}
+      <div className="z-0 w-full absolute inset-0 h-screen">
+        <SparklesCore
+          id="tsparticlescontact"
+          background="transparent"
+          minSize={0.6}
+          maxSize={1.4}
+          particleDensity={80}
+          className="w-full h-full"
+          particleColor="#FFFFFF"
+          speed={0.5}
+        />
+      </div>
       <div
         className="flex flex-col p-4 justify-center max-w-screen-lg
-      mx-auto h-full"
+      mx-auto h-full relative z-10"
       >
         <div className="pb-8">
           <p

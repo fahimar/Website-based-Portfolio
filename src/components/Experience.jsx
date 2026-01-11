@@ -8,6 +8,7 @@ import nextjs from "../assets/nextjs.png";
 import MySQL from "../assets/MySQL.png";
 import github from "../assets/github.png";
 import tailwind from "../assets/tailwind.png";
+import { SparklesCore } from "./ui/sparkles";
 
 const Experience = () => {
   const techs = [
@@ -69,11 +70,24 @@ const Experience = () => {
   return (
     <div
       name="experience"
-      className="bg-gradient-to-b from-gray-800 to-black w-full h-full text-white md:h-screen"
+      className="bg-gradient-to-b from-black via-black to-gray-800 w-full h-full text-white md:h-screen relative"
     >
+      {/* Sparkles Background Animation */}
+      <div className="z-0 w-full absolute inset-0 h-screen">
+        <SparklesCore
+          id="tsparticlesexperience"
+          background="transparent"
+          minSize={0.6}
+          maxSize={1.4}
+          particleDensity={80}
+          className="w-full h-full"
+          particleColor="#FFFFFF"
+          speed={0.5}
+        />
+      </div>
       <div
         className="max-w-screen-lg mx-auto p-4 flex
-      flex-col justify-center w-full h-full text-white"
+      flex-col justify-center w-full h-full text-white relative z-10"
       >
         <div>
           <p
