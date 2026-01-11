@@ -26,13 +26,13 @@ const Experience = () => {
     "github",
     "docker",
     "vercel",
-    "visualstudiocode",
+    "vscode",
     "figma",
     "postman",
     "npm",
     "redux",
     "graphql",
-    "amazonaws",
+    "aws",
   ];
 
   return (

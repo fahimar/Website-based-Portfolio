@@ -1,5 +1,6 @@
 import React from "react";
 import HeroImage from "../assets/heroImage.png";
+// import { MdOutlineKeyboardArrowRight } from "react-icons/md";
 import { Link } from "react-scroll";
 import { SparklesCore } from "./ui/sparkles";
 import { InteractiveHoverButton } from "./ui/interactive-hover-button";
@@ -8,27 +9,26 @@ const Home = () => {
   return (
     <div
       name="home"
-      className="h-screen w-full bg-gradient-to-b from-black
-     via-black to-gray-800 relative"
+      className="h-screen w-full bg-gradient-to-b from-black via-black to-gray-800 relative overflow-hidden"
     >
-      {/* Sparkles Background Animation */}
-      <div className="z-0 w-full absolute inset-0 h-screen">
+      {/* Sparkles Background */}
+      <div className="absolute inset-0 w-full h-full">
         <SparklesCore
-          id="tsparticleshome"
+          id="tsparticlesfullpage"
           background="transparent"
           minSize={0.6}
           maxSize={1.4}
-          particleDensity={80}
+          particleDensity={100}
           className="w-full h-full"
           particleColor="#FFFFFF"
-          speed={0.5}
         />
       </div>
 
+      {/* Content */}
       <div className="max-w-screen-lg mx-auto flex flex-col items-center justify-center h-full px-4 md:flex-row relative z-10">
-        <div className="flex flex-col mx-auto justify-center h-full">
-          <h2 className="text-4xl sm:text-6xl font-bold text-white">
-            I'm a Saas Builder [Full Stack Developer]
+        <div className="flex flex-col justify-center h-full">
+          <h2 className="text-4xl sm:text-7xl font-bold text-white">
+            I'm a Full Stack Developer
           </h2>
           <p className="text-gray-400 py-4 max-w-md">
             I’m Fahim Al Rashid, a passionate Full Stack Developer with a B.Sc.
@@ -43,6 +43,7 @@ const Home = () => {
             computing, and blockchain to expand my capabilities and contribute
             meaningfully to innovative tech-driven solutions.
           </p>
+
           <div>
             <Link to="portfolio" smooth duration={500}>
               <InteractiveHoverButton
@@ -52,7 +53,8 @@ const Home = () => {
             </Link>
           </div>
         </div>
-        <div className="relative z-10">
+
+        <div>
           <img
             src={HeroImage}
             alt="my profile"
