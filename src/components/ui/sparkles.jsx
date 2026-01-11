@@ -36,7 +36,10 @@ export const SparklesCore = (props) => {
         options={{
           background: {
             color: {
-              value: background === "transparent" ? "transparent" : (background || "#0d47a1"),
+              value:
+                background === "transparent"
+                  ? "transparent"
+                  : background || "#0d47a1",
             },
           },
           fullScreen: {

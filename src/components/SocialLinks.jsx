@@ -11,7 +11,7 @@ const SocialLinks = () => {
           LinkedIn <FaLinkedin size={30} />
         </>
       ),
-      href: "https://www.linkedin.com/in/fahim-a-r-akil-324261194/",
+      href: "https://www.linkedin.com/in/fahim-al-rashid-software-engineer-4986a9391/",
       style: "rounded-tr-md",
     },
     {
@@ -50,7 +50,7 @@ const SocialLinks = () => {
           Curriculum Vitae <BsFillPersonLinesFill size={30} />
         </>
       ),
-      href: "/CV_Fahim Al Rashid.pdf",
+      href: "",
       style: "rounded-br-md",
       download: true,
     },

@@ -72,6 +72,13 @@ export function Component({
           zIndex: 1,
           rotate: 0,
         };
+      default:
+        return {
+          top: 0,
+          left: 0,
+          zIndex: 1,
+          rotate: 0,
+        };
     }
   };
 
