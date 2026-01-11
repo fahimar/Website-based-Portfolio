@@ -17,7 +17,7 @@ const About = () => {
       id: "2",
       title: "Current Role",
       description:
-        "Currently working at Pioneer Alpha, where I contribute to production-grade platforms including AI-powered EdTech products. My work spans frontend architecture, API integration, SEO optimization, and analytics implementation.",
+        "Currently working at www.digiwinners.com, where I contribute to production-grade platforms including AI-powered EdTech products. My work spans frontend architecture, API integration, SEO optimization, and analytics implementation.",
       icon: <Briefcase className="h-5 w-5" />,
       color: "linear-gradient(135deg, #0f766e 0%, #115e59 100%)", // Deep Teal
     },
