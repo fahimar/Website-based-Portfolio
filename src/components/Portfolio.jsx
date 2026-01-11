@@ -50,7 +50,7 @@ const Portfolio = () => {
     w-full text-white md:h-screen relative"
     >
       {/* Sparkles Background Animation */}
-      <div className="z-0 w-full absolute inset-0 h-screen">
+      <div className="z-0 w-full absolute inset-0 h-full">
         <SparklesCore
           id="tsparticlesportfolio"
           background="transparent"

@@ -9,7 +9,7 @@ const Contact = () => {
      via-black to-gray-800 p-4 text-white relative"
     >
       {/* Sparkles Background Animation */}
-      <div className="z-0 w-full absolute inset-0 h-screen">
+      <div className="z-0 w-full absolute inset-0 h-full">
         <SparklesCore
           id="tsparticlescontact"
           background="transparent"

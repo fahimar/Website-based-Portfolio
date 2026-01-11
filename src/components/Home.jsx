@@ -1,8 +1,8 @@
 import React from "react";
 import HeroImage from "../assets/heroImage.png";
-import { CgArrowRightR } from "react-icons/cg";
 import { Link } from "react-scroll";
 import { SparklesCore } from "./ui/sparkles";
+import { InteractiveHoverButton } from "./ui/interactive-hover-button";
 
 const Home = () => {
   return (
@@ -44,17 +44,11 @@ const Home = () => {
             meaningfully to innovative tech-driven solutions.
           </p>
           <div>
-            <Link
-              to="portfolio"
-              smooth
-              duration={500}
-              className="group shadow-lg text-white w-fit px-6 py-3 my-2 flex
-            items-center rounded-md bg-gradient-to-r from-cyan-500 shadow-purple-500 cursor-pointer"
-            >
-              Portfolio
-              <span className="group-hover:rotate-90 duration-300">
-                <CgArrowRightR size={30} className="ml-1" />
-              </span>
+            <Link to="portfolio" smooth duration={500}>
+              <InteractiveHoverButton
+                text="Portfolio"
+                className="w-40 text-base shadow-lg shadow-cyan-500/50"
+              />
             </Link>
           </div>
         </div>
