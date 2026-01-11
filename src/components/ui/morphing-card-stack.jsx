@@ -14,7 +14,7 @@ const SWIPE_THRESHOLD = 50;
 export function Component({
   cards = [],
   className,
-  defaultLayout = "stack",
+  defaultLayout = "list",
   onCardClick,
 }) {
   const [layout, setLayout] = useState(defaultLayout);
@@ -156,7 +156,8 @@ export function Component({
                       "cursor-grab active:cursor-grabbing",
                     layout === "grid" && "w-full aspect-square",
                     layout === "list" && "w-full",
-                    isExpanded && "ring-2 ring-cyan-400/50 shadow-2xl shadow-cyan-500/20"
+                    isExpanded &&
+                      "ring-2 ring-cyan-400/50 shadow-2xl shadow-cyan-500/20"
                   )}
                   style={{
                     background: card.color || "rgba(30, 30, 30, 0.6)",

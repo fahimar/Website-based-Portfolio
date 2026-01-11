@@ -4,8 +4,11 @@ import HeroImage from "../assets/heroImage.png";
 import { Link } from "react-scroll";
 import { SparklesCore } from "./ui/sparkles";
 import { InteractiveHoverButton } from "./ui/interactive-hover-button";
+import { FlipWords } from "./ui/flip-words";
 
 const Home = () => {
+  const words = ["Full Stack Developer", "Software Engineer", "Problem Solver", "Tech Enthusiast"];
+
   return (
     <div
       name="home"
@@ -28,7 +31,7 @@ const Home = () => {
       <div className="max-w-screen-lg mx-auto flex flex-col items-center justify-center h-full px-4 md:flex-row relative z-10">
         <div className="flex flex-col justify-center h-full">
           <h2 className="text-4xl sm:text-7xl font-bold text-white">
-            I'm a Full Stack Developer
+            I'm a <FlipWords words={words} className="text-cyan-400" />
           </h2>
           <p className="text-gray-400 py-4 max-w-md">
             I’m Fahim Al Rashid, a passionate Full Stack Developer with a B.Sc.

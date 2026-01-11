@@ -77,7 +77,7 @@ const About = () => {
 
         {/* Morphing Card Stack */}
         <div className="mt-8">
-          <MorphingCardStack cards={aboutCards} defaultLayout="grid" />
+          <MorphingCardStack cards={aboutCards} defaultLayout="stack" />
         </div>
 
         {/* Additional Info */}
