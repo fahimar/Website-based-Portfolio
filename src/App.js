@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Analytics } from "@vercel/analytics/react";
 import About from "./components/About";
 import Contact from "./components/Contact";
 import Experience from "./components/Experience";
@@ -29,6 +30,7 @@ function App() {
         <Route path="/" element={<MainPage />} />
         <Route path="/tech-blog" element={<DockerPostgresBlog />} />
       </Routes>
+      <Analytics />
     </Router>
   );
 }
