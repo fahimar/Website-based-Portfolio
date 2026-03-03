@@ -772,7 +772,7 @@ const DockerPostgresBlog = () => {
             </li>
           </ul>
 
-          <h3>// Popular Migration Tools</h3>
+          <h3>{"// Popular Migration Tools"}</h3>
 
           <div className="blog-migration-grid">
             <div className="blog-migration-card">
@@ -803,7 +803,7 @@ const DockerPostgresBlog = () => {
             </div>
           </div>
 
-          <h3>// Quick Fix (Immediate Solution)</h3>
+          <h3>{"// Quick Fix (Immediate Solution)"}</h3>
           <p>
             এখনই production এ table add করতে চাইলে, সরাসরি running container এ
             run করো:
