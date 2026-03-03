@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Docker + Postgres: Volume সত্যিই কি temporary? | Red's DevLog</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #12121a;
+    --border: #1e1e2e;
+    --accent: #00ff88;
+    --accent2: #ff6b35;
+    --accent3: #7c6af7;
+    --text: #e8e8f0;
+    --muted: #6b6b8a;
+    --code-bg: #0d1117;
+    --danger: #ff4757;
+    --success: #00ff88;
+    --warning: #ffa502;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(124,106,247,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,106,247,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    padding: 48px 0 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 64px;
+  }
+
+  .blog-tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(0,255,136,0.08);
+    border: 1px solid rgba(0,255,136,0.2);
+    padding: 4px 12px;
+    border-radius: 2px;
+    margin-bottom: 24px;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -1px;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #e8e8f0 0%, #7c6af7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+    color: var(--muted);
+    margin-bottom: 32px;
+    font-weight: 400;
+  }
+
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 20px 0;
+    border-top: 1px solid var(--border);
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .meta-item { display: flex; align-items: center; gap: 6px; }
+  .dot { color: var(--border); }
+
+  /* Article body */
+  article { padding-bottom: 80px; }
+
+  /* TL;DR Box */
+  .tldr {
+    background: linear-gradient(135deg, rgba(124,106,247,0.08), rgba(0,255,136,0.05));
+    border: 1px solid rgba(124,106,247,0.3);
+    border-left: 3px solid var(--accent3);
+    border-radius: 0 8px 8px 0;
+    padding: 24px 28px;
+    margin-bottom: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tldr::before {
+    content: 'TL;DR';
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--accent3);
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .tldr p { color: var(--text); font-size: 1rem; }
+
+  /* Section headings */
+  h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 56px 0 20px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  h2::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 28px;
+    background: linear-gradient(var(--accent), var(--accent3));
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 32px 0 12px;
+    color: var(--accent);
+    font-family: 'Space Mono', monospace;
+  }
+
+  p { margin-bottom: 16px; color: #c8c8d8; font-size: 1rem; }
+
+  /* Code blocks */
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+    overflow-x: auto;
+    margin: 20px 0;
+    position: relative;
+  }
+
+  pre::before {
+    content: attr(data-lang);
+    position: absolute;
+    top: 8px;
+    right: 14px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  code {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #a9b1d6;
+  }
+
+  p code, li code {
+    background: rgba(124,106,247,0.12);
+    border: 1px solid rgba(124,106,247,0.2);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.85em;
+    color: #c0b7ff;
+  }
+
+  /* Callout boxes */
+  .callout {
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin: 28px 0;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .callout-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: 2px; }
+  .callout-body { flex: 1; }
+  .callout-title { font-weight: 700; margin-bottom: 6px; font-size: 0.9rem; letter-spacing: 0.5px; }
+  .callout p { margin-bottom: 0; }
+
+  .callout.warning {
+    background: rgba(255,165,2,0.07);
+    border: 1px solid rgba(255,165,2,0.25);
+  }
+  .callout.warning .callout-title { color: var(--warning); }
+
+  .callout.danger {
+    background: rgba(255,71,87,0.07);
+    border: 1px solid rgba(255,71,87,0.25);
+  }
+  .callout.danger .callout-title { color: var(--danger); }
+
+  .callout.success {
+    background: rgba(0,255,136,0.05);
+    border: 1px solid rgba(0,255,136,0.2);
+  }
+  .callout.success .callout-title { color: var(--success); }
+
+  .callout.info {
+    background: rgba(124,106,247,0.07);
+    border: 1px solid rgba(124,106,247,0.25);
+  }
+  .callout.info .callout-title { color: var(--accent3); }
+
+  /* Table */
+  .table-wrap {
+    overflow-x: auto;
+    margin: 28px 0;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+  }
+
+  thead tr { background: rgba(124,106,247,0.1); }
+  th {
+    padding: 12px 16px;
+    text-align: left;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent3);
+    font-weight: 700;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(30,30,46,0.8);
+    color: var(--text);
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .status-safe { color: var(--success); font-weight: 700; }
+  .status-danger { color: var(--danger); font-weight: 700; }
+
+  /* Step list */
+  .steps { list-style: none; margin: 20px 0; }
+  .steps li {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+
+  .step-num {
+    background: rgba(124,106,247,0.15);
+    border: 1px solid rgba(124,106,247,0.3);
+    color: var(--accent3);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* Flow diagram */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin: 28px 0;
+  }
+
+  .flow-node {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 20px;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    position: relative;
+  }
+
+  .flow-node.trigger { border-color: rgba(0,255,136,0.3); background: rgba(0,255,136,0.04); }
+  .flow-node.check { border-color: rgba(255,165,2,0.3); background: rgba(255,165,2,0.04); }
+  .flow-node.action { border-color: rgba(124,106,247,0.3); background: rgba(124,106,247,0.04); }
+  .flow-node.result { border-color: rgba(255,71,87,0.3); background: rgba(255,71,87,0.04); }
+
+  .flow-node-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    height: 24px;
+    font-size: 18px;
+  }
+
+  /* Divider */
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 48px 0;
+  }
+
+  /* Highlight text */
+  .highlight { color: var(--accent); font-weight: 700; }
+  .highlight-orange { color: var(--accent2); font-weight: 700; }
+  .highlight-purple { color: var(--accent3); font-weight: 700; }
+
+  /* Migration strategy grid */
+  .migration-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 24px 0;
+  }
+
+  @media (max-width: 560px) {
+    .migration-grid { grid-template-columns: 1fr; }
+  }
+
+  .migration-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+    transition: border-color 0.2s;
+  }
+
+  .migration-card:hover { border-color: var(--accent3); }
+
+  .migration-card h4 {
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent3);
+    margin-bottom: 8px;
+  }
+
+  .migration-card p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 0;
+  }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 40px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .series-nav {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px 28px;
+    margin: 48px 0;
+  }
+
+  .series-nav-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent3);
+    margin-bottom: 12px;
+  }
+
+  .series-nav h3 {
+    font-size: 1rem;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    margin-bottom: 6px;
+    margin-top: 0;
+  }
+
+  .series-nav p { font-size: 14px; margin-bottom: 0; }
+
+  /* Syntax colors */
+  .kw { color: #7c6af7; }
+  .str { color: #9ece6a; }
+  .cm { color: #565f89; font-style: italic; }
+  .num { color: #ff9e64; }
+  .fn { color: #73daca; }
+  .prop { color: #7dcfff; }
+
+  /* Scroll animation */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .container { animation: fadeUp 0.5s ease both; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <span class="blog-tag">Docker Series · Part 01</span>
+    <h1>Docker + Postgres:<br>Volume কি সত্যিই Temporary?</h1>
+    <p class="subtitle">initdb কেন বারবার run করে না — এবং production এ কী করা উচিত</p>
+    <div class="meta">
+      <span class="meta-item">ফাহিম আল রশিদ</span>
+      <span class="dot">·</span>
+      <span class="meta-item">March 2026</span>
+      <span class="dot">·</span>
+      <span class="meta-item">8 min read</span>
+      <span class="dot">·</span>
+      <span class="meta-item" style="color: var(--accent)">Docker · Postgres · DevOps</span>
+    </div>
+  </header>
+
+  <article>
+
+    <div class="tldr">
+      <p>Docker volume <strong>temporary না — persistent</strong>। Container delete হলেও data থাকে। কিন্তু <code>/docker-entrypoint-initdb.d/</code> শুধু প্রথমবার empty volume দেখলে run করে। Production এ schema update করতে migration tool ব্যবহার করো — <code>initdb</code> এর উপর ভরসা করো না।</p>
+    </div>
+
+    <h2>প্রশ্নটা কোথা থেকে এলো?</h2>
+
+    <p>একটা common scenario। তুমি Postgres container চালাচ্ছো, নতুন একটা table যোগ করলে <code>schema.sql</code> এ, container restart দিলে — কিন্তু table নেই। মাথায় প্রশ্ন আসে: <span class="highlight-orange">volume কি delete হয়ে গেছে? নাকি schema run হয়নি?</span></p>
+
+    <p>এই confusion টা আসলে Docker এর একটা intentional design decision না বোঝার কারণে হয়। চলো step by step ভেঙে দেখি।</p>
+
+    <h2>Volume কি আসলে Temporary?</h2>
+
+    <p><span class="highlight">না।</span> Docker volume হলো <strong>persistent storage</strong>। এটা container এর lifecycle এর সাথে tied না। মানে:</p>
+
+    <div class="callout success">
+      <span class="callout-icon">✓</span>
+      <div class="callout-body">
+        <div class="callout-title">VOLUME TRUTH</div>
+        <p>Container stop করো, restart করো, এমনকি <code>docker compose down</code> করো — volume এর data থাকবে। Volume আলাদা entity, container না।</p>
+      </div>
+    </div>
+
+    <p>তাহলে সমস্যা কোথায়?</p>
+
+    <h2>initdb.d — The One-Time Magic</h2>
+
+    <p>Postgres Docker image এর একটা feature আছে: <code>/docker-entrypoint-initdb.d/</code> ফোল্ডারে যেকোনো <code>.sql</code> বা <code>.sh</code> ফাইল রাখলে সেটা startup এ run করে।</p>
+
+    <p>কিন্তু <span class="highlight-orange">শুধুমাত্র তখনই</span> যখন data directory সম্পূর্ণ empty থাকে।</p>
+
+    <div class="flow">
+      <div class="flow-node trigger">
+        <div class="flow-node-label">Trigger</div>
+        docker compose up (প্রথমবার)
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-node check">
+        <div class="flow-node-label">Check</div>
+        postgres_data volume → <strong>empty?</strong>
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-node action">
+        <div class="flow-node-label">Action (empty হলে)</div>
+        initdb.d scripts run → tables create → DB initialize
+      </div>
+      <div class="flow-arrow">↓</div>
+      <div class="flow-node result">
+        <div class="flow-node-label">Result (পরের বার)</div>
+        volume already initialized → initdb.d SKIP ❌
+      </div>
+    </div>
+
+    <p>এটা intentional। Postgres ধরে নেয়: "data already আছে, আমি overwrite করবো না।" এটা data safety feature।</p>
+
+    <h2>তোমার Real-World Scenario</h2>
+
+    <p>ধরো তোমার project এ এই tables ছিল:</p>
+
+    <pre data-lang="sql"><code><span class="cm">-- schema.sql (original)</span>
+<span class="kw">CREATE TABLE</span> <span class="fn">faq_entries</span> (...);
+<span class="kw">CREATE TABLE</span> <span class="fn">training_entries</span> (...);
+<span class="kw">CREATE TABLE</span> <span class="fn">conversation_logs</span> (...);</code></pre>
+
+    <p>পরে তুমি যোগ করলে:</p>
+
+    <pre data-lang="sql"><code><span class="kw">CREATE TABLE</span> <span class="fn">groq_usage_logs</span> (...); <span class="cm">-- নতুন</span></code></pre>
+
+    <p>কিন্তু <code>docker compose up</code> করার পর <code>groq_usage_logs</code> নেই।</p>
+
+    <div class="callout warning">
+      <span class="callout-icon">⚠️</span>
+      <div class="callout-body">
+        <div class="callout-title">WHY IT HAPPENED</div>
+        <p>Volume আগে থেকেই initialized ছিল (তিনটা table নিয়ে)। Postgres দেখলো "DB exists" — তাই <code>initdb.d</code> skip করলো। নতুন table কোনোদিনই create হয়নি।</p>
+      </div>
+    </div>
+
+    <h2>Volume এর সত্যিকারের Life Cycle</h2>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Action</th>
+            <th>Volume Data</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>docker compose stop</code></td>
+            <td>সব data থাকে</td>
+            <td class="status-safe">✓ SAFE</td>
+          </tr>
+          <tr>
+            <td><code>docker compose down</code></td>
+            <td>সব data থাকে</td>
+            <td class="status-safe">✓ SAFE</td>
+          </tr>
+          <tr>
+            <td>Container delete</td>
+            <td>সব data থাকে</td>
+            <td class="status-safe">✓ SAFE</td>
+          </tr>
+          <tr>
+            <td><code>docker compose down -v</code></td>
+            <td>Volume সহ সব যায়</td>
+            <td class="status-danger">✗ DANGER</td>
+          </tr>
+          <tr>
+            <td><code>docker volume rm &lt;name&gt;</code></td>
+            <td>Volume delete, সব যায়</td>
+            <td class="status-danger">✗ DANGER</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout danger">
+      <span class="callout-icon">🔥</span>
+      <div class="callout-body">
+        <div class="callout-title">PRODUCTION WARNING</div>
+        <p><code>docker compose down -v</code> flag টা production এ কখনো blindly run করো না। এই <code>-v</code> flag টাই সব data মুছে দেয়।</p>
+      </div>
+    </div>
+
+    <h2>Volume আছে কিনা Check করো</h2>
+
+    <pre data-lang="bash"><code><span class="cm"># সব volume দেখো</span>
+<span class="fn">docker</span> volume ls
+
+<span class="cm"># Project এর volume inspect করো</span>
+<span class="fn">docker</span> volume inspect faces-chatbot_postgres_data</code></pre>
+
+    <p>Volume এর নাম সাধারণত হয়: <code>&lt;project-folder-name&gt;_&lt;volume-name-in-compose&gt;</code>।</p>
+
+    <p>যদি <code>docker-compose.yml</code> এ লেখা থাকে:</p>
+
+    <pre data-lang="yaml"><code><span class="prop">volumes</span>:
+  <span class="prop">postgres_data</span>:</code></pre>
+
+    <p>আর project folder এর নাম <code>faces-chatbot</code> হলে, volume এর নাম হবে <code>faces-chatbot_postgres_data</code>।</p>
+
+    <hr>
+
+    <h2>Production-Safe Solution: Migration</h2>
+
+    <p><code>initdb.d</code> দিয়ে শুধু initial setup করা যায়। Schema evolve করতে হলে দরকার <strong>migration system</strong>।</p>
+
+    <p>Concept টা simple:</p>
+
+    <ul class="steps">
+      <li>
+        <span class="step-num">1</span>
+        <div>প্রতিটা schema change কে numbered file এ রাখো (e.g., <code>V1__initial.sql</code>, <code>V2__add_groq_logs.sql</code>)</div>
+      </li>
+      <li>
+        <span class="step-num">2</span>
+        <div>Migration tool track করে কোন version পর্যন্ত applied হয়েছে</div>
+      </li>
+      <li>
+        <span class="step-num">3</span>
+        <div>শুধু নতুন files apply করে — আগেরগুলো skip করে</div>
+      </li>
+    </ul>
+
+    <h3>// Popular Migration Tools</h3>
+
+    <div class="migration-grid">
+      <div class="migration-card">
+        <h4>Alembic</h4>
+        <p>SQLAlchemy projects এর জন্য। Python-based। Auto-generate migrations সহ।</p>
+      </div>
+      <div class="migration-card">
+        <h4>Flyway</h4>
+        <p>SQL-first approach। Java ecosystem popular। Docker image আছে।</p>
+      </div>
+      <div class="migration-card">
+        <h4>Liquibase</h4>
+        <p>XML/YAML/JSON format এ schema define করো। Enterprise-friendly।</p>
+      </div>
+      <div class="migration-card">
+        <h4>Manual Versioned SQL</h4>
+        <p>Simplest। <code>migrations/</code> folder এ numbered SQL files। Small projects এর জন্য perfect।</p>
+      </div>
+    </div>
+
+    <h3>// Quick Fix (Immediate Solution)</h3>
+
+    <p>এখনই production এ table add করতে চাইলে, সরাসরি running container এ run করো:</p>
+
+    <pre data-lang="bash"><code><span class="cm"># Running container এ connect করো</span>
+<span class="fn">docker</span> exec -it &lt;postgres-container-name&gt; psql -U &lt;user&gt; -d &lt;dbname&gt;
+
+<span class="cm"># তারপর SQL run করো</span>
+<span class="kw">CREATE TABLE</span> <span class="fn">groq_usage_logs</span> (
+  id <span class="kw">SERIAL PRIMARY KEY</span>,
+  created_at <span class="kw">TIMESTAMP DEFAULT NOW</span>()
+  <span class="cm">-- বাকি columns...</span>
+);</code></pre>
+
+    <div class="callout info">
+      <span class="callout-icon">💡</span>
+      <div class="callout-body">
+        <div class="callout-title">PRO TIP</div>
+        <p>এই manual change টাকেও একটা migration file এ document করে রাখো। নাহলে পরে নতুন environment setup করতে গেলে এই table miss হবে।</p>
+      </div>
+    </div>
+
+    <hr>
+
+    <h2>Docker Compose env_file Bonus Fix</h2>
+
+    <p>যেহেতু কথা উঠলো — একটা common compose error এর সমাধানও দিয়ে রাখি।</p>
+
+    <p>Error: <code>services.api.environment must be a mapping</code></p>
+
+    <p>এটা হয় যখন <code>environment:</code> এ `.env` content paste করা হয় যেটা YAML mapping format এ নেই।</p>
+
+    <pre data-lang="yaml"><code><span class="cm"># ❌ Wrong — string format</span>
+<span class="prop">environment</span>:
+  - DATABASE_URL=postgres://...
+
+<span class="cm"># ✅ Correct — use env_file instead</span>
+<span class="prop">api</span>:
+  <span class="prop">build</span>: .
+  <span class="prop">env_file</span>:
+    - .env.prod
+  <span class="prop">depends_on</span>:
+    - postgres</code></pre>
+
+    <p><code>env_file:</code> ব্যবহার করলে <code>environment:</code> block দরকার নেই।</p>
+
+    <hr>
+
+    <h2>Key Takeaways</h2>
+
+    <ul class="steps">
+      <li>
+        <span class="step-num">→</span>
+        <div><span class="highlight">Volume persistent</span> — container lifecycle এর সাথে যায় না</div>
+      </li>
+      <li>
+        <span class="step-num">→</span>
+        <div><span class="highlight-orange">initdb.d</span> শুধু empty volume এ একবারই run করে</div>
+      </li>
+      <li>
+        <span class="step-num">→</span>
+        <div><span class="highlight-purple">Migration tool</span> ব্যবহার করো schema evolution এর জন্য</div>
+      </li>
+      <li>
+        <span class="step-num">→</span>
+        <div><code>docker compose down -v</code> production এ সাবধানে ব্যবহার করো</div>
+      </li>
+    </ul>
+
+    <div class="series-nav">
+      <div class="series-nav-label">Up Next in Series</div>
+      <h3>Part 02 · Zero-Downtime Schema Migration with Alembic</h3>
+      <p>FastAPI + SQLAlchemy project এ Alembic দিয়ে কিভাবে safely schema update করবে — production downtime ছাড়া।</p>
+    </div>
+
+  </article>
+
+  <footer>
+    <span>Red's DevLog · Docker Production Series</span>
+    <span>Part 01 of 4</span>
+  </footer>
+</div>
+
+</body>
+</html>
